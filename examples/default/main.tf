@@ -16,6 +16,13 @@ provider "azurerm" {
   features {}
 }
 
+## Section to provide a random Azure region for the resource group
+# This allows us to randomize the region for the resource group.
+module "regions" {
+  source  = "Azure/regions/azurerm"
+  version = ">= 0.3.0"
+}
+
 # This allows us to randomize the region for the resource group.
 resource "random_integer" "region_index" {
   min = 0
@@ -32,7 +39,7 @@ module "naming" {
 # This is required for resource modules
 resource "azurerm_resource_group" "this" {
   name     = module.naming.resource_group.name_unique
-  location = "module.regions.regions[random_integer.region_index.result].name"
+  location = module.regions.regions[random_integer.region_index.result].name
 }
 
 # This is the module call
@@ -45,7 +52,17 @@ module "cognitive_account" {
   # ...
   name                = module.naming.cognitive_account.name_unique
   resource_group_name = azurerm_resource_group.this.name
-  sku_name            = ""
-  kind                = ""
-  deployment          = ""
+  sku_name            = "S0"
+  kind                = "OpenAI"
+  deployment = {
+    name = "cd-${module.naming.cognitive_account.name_unique}"
+    model = {
+      format  = "OpenAI"
+      name    = "text-curie-001"
+      version = "1"
+    }
+    scale = {
+      type = "Standard"
+    }
+  }
 }

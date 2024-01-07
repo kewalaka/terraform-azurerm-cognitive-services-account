@@ -40,7 +40,7 @@ variable "customer_managed_key" {
     user_assigned_identity_resource_id = optional(string, null)
   })
   description = "Customer managed keys that should be associated with the resource."
-  default     = {}
+  default     = null
 }
 
 variable "diagnostic_settings" {

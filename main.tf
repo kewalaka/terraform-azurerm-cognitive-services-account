@@ -3,6 +3,13 @@ data "azurerm_resource_group" "parent" {
   name  = var.resource_group_name
 }
 
+data "azurerm_key_vault_key" "cmk" {
+  count = var.customer_managed_key == null ? 0 : 1
+
+  key_vault_id = var.customer_managed_key.key_vault_resource_id
+  name         = var.customer_managed_key.key_name
+}
+
 resource "azurerm_cognitive_account" "this" {
   kind                                         = var.kind
   location                                     = coalesce(var.location, local.resource_group_location)
@@ -27,8 +34,8 @@ resource "azurerm_cognitive_account" "this" {
   dynamic "customer_managed_key" {
     for_each = var.customer_managed_key == null ? [] : [var.customer_managed_key]
     content {
-      key_vault_key_id   = customer_managed_key.value.key_vault_key_id
-      identity_client_id = customer_managed_key.value.identity_client_id
+      key_vault_key_id   = data.azurerm_key_vault_key.cmk[0].id
+      identity_client_id = var.customer_managed_key.user_assigned_identity_resource_id
     }
   }
   dynamic "identity" {
@@ -72,7 +79,7 @@ resource "azurerm_cognitive_account" "this" {
 }
 
 resource "azurerm_cognitive_deployment" "this" {
-  cognitive_account_id   = var.deployment.cognitive_account_id
+  cognitive_account_id   = azurerm_cognitive_account.this.id
   name                   = var.deployment.name
   rai_policy_name        = var.deployment.rai_policy_name
   version_upgrade_option = var.deployment.version_upgrade_option

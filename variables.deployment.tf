@@ -1,6 +1,5 @@
 variable "deployment" {
   type = object({
-    cognitive_account_id   = string
     name                   = string
     rai_policy_name        = optional(string)
     version_upgrade_option = optional(string)
@@ -24,7 +23,6 @@ variable "deployment" {
     }))
   })
   description = <<-EOT
- - `cognitive_account_id` - (Required) The ID of the Cognitive Services Account. Changing this forces a new resource to be created.
  - `name` - (Required) The name of the Cognitive Services Account Deployment. Changing this forces a new resource to be created.
  - `rai_policy_name` - (Optional) The name of RAI policy.
  - `version_upgrade_option` - (Optional) Deployment model version upgrade option. Possible values are `OnceNewDefaultVersionAvailable`, `OnceCurrentVersionExpired`, and `NoAutoUpgrade`. Defaults to `OnceNewDefaultVersionAvailable`. Changing this forces a new resource to be created.
