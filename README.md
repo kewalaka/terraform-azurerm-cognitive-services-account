@@ -1,22 +1,10 @@
 <!-- BEGIN_TF_DOCS -->
-# terraform-azurerm-avm-template
+# terraform-azurerm-avm-cognitiveservices-account
 
-This is a template repo for Terraform Azure Verified Modules.
+This is a template repo ***in the style of Azure Verified Modules*** for Azure Cognitive Services.  For official AVM modules please see <https://aka.ms/AVM>.
 
-Things to do:
-
-1. Set up a GitHub repo environment called `test`.
-1. Configure environment protection rule to ensure that approval is required before deploying to this environment.
-1. Create a user-assigned managed identity in your test subscription.
-1. Create a role assignment for the managed identity on your test subscription, use the minimum required role.
-1. Configure federated identity credentials on the user assigned managed identity. Use the GitHub environment.
-1. Create the following environment secrets on the `test` environment:
-   1. AZURE\_CLIENT\_ID
-   1. AZURE\_TENANT\_ID
-   1. AZURE\_SUBSCRIPTION\_ID
-1. Search and update TODOs within the code and remove the TODO comments once complete.
-
-Major version Zero (0.y.z) is for initial development. Anything MAY change at any time. A module SHOULD NOT be considered stable till at least it is major version one (1.0.0) or greater. Changes will always be via new versions being published and no changes will be made to existing published versions. For more details please go to <https://semver.org/>
+> [!WARNING]
+> Major version Zero (0.y.z) is for initial development. Anything MAY change at any time. A module SHOULD NOT be considered stable till at least it is major version one (1.0.0) or greater. Changes will always be via new versions being published and no changes will be made to existing published versions. For more details please go to <https://semver.org/>
 
 <!-- markdownlint-disable MD033 -->
 ## Requirements
@@ -25,23 +13,24 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.3.0)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.71.0)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.71.0, < 4.0.0)
 
-- <a name="requirement_random"></a> [random](#requirement\_random) (>= 3.5.0)
+- <a name="requirement_random"></a> [random](#requirement\_random) (>= 3.5.0, < 4.0.0)
 
 ## Providers
 
 The following providers are used by this module:
 
-- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (>= 3.71.0)
+- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (>= 3.71.0, < 4.0.0)
 
-- <a name="provider_random"></a> [random](#provider\_random) (>= 3.5.0)
+- <a name="provider_random"></a> [random](#provider\_random) (>= 3.5.0, < 4.0.0)
 
 ## Resources
 
 The following resources are used by this module:
 
-- [azurerm_TODO_the_resource_for_this_module.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/TODO_the_resource_for_this_module) (resource)
+- [azurerm_cognitive_account.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cognitive_account) (resource)
+- [azurerm_cognitive_deployment.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cognitive_deployment) (resource)
 - [azurerm_management_lock.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_lock) (resource)
 - [azurerm_private_endpoint.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_endpoint) (resource)
 - [azurerm_private_endpoint_application_security_group_association.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_endpoint_application_security_group_association) (resource)
@@ -55,6 +44,69 @@ The following resources are used by this module:
 
 The following input variables are required:
 
+### <a name="input_deployment"></a> [deployment](#input\_deployment)
+
+Description: - `cognitive_account_id` - (Required) The ID of the Cognitive Services Account. Changing this forces a new resource to be created.
+- `name` - (Required) The name of the Cognitive Services Account Deployment. Changing this forces a new resource to be created.
+- `rai_policy_name` - (Optional) The name of RAI policy.
+- `version_upgrade_option` - (Optional) Deployment model version upgrade option. Possible values are `OnceNewDefaultVersionAvailable`, `OnceCurrentVersionExpired`, and `NoAutoUpgrade`. Defaults to `OnceNewDefaultVersionAvailable`. Changing this forces a new resource to be created.
+
+---
+`model` block supports the following:
+- `format` - (Required) The format of the Cognitive Services Account Deployment model. Changing this forces a new resource to be created. Possible value is `OpenAI`.
+- `name` - (Required) The name of the Cognitive Services Account Deployment model. Changing this forces a new resource to be created.
+- `version` - (Required) The version of Cognitive Services Account Deployment model.
+
+---
+`scale` block supports the following:
+- `capacity` - (Optional) Tokens-per-Minute (TPM). The unit of measure for this field is in the thousands of Tokens-per-Minute. Defaults to `1` which means that the limitation is `1000` tokens per minute. If the resources SKU supports scale in/out then the capacity field should be included in the resources' configuration. If the scale in/out is not supported by the resources SKU then this field can be safely omitted. For more information about TPM please see the [product documentation](https://learn.microsoft.com/azure/ai-services/openai/how-to/quota?tabs=rest).
+- `family` - (Optional) If the service has different generations of hardware, for the same SKU, then that can be captured here. Changing this forces a new resource to be created.
+- `size` - (Optional) The SKU size. When the name field is the combination of tier and some other value, this would be the standalone code. Changing this forces a new resource to be created.
+- `tier` - (Optional) Possible values are `Free`, `Basic`, `Standard`, `Premium`, `Enterprise`. Changing this forces a new resource to be created.
+- `type` - (Required) The name of the SKU. Ex
+
+---
+`timeouts` block supports the following:
+- `create` - (Defaults to 30 minutes) Used when creating the Cognitive Services Account Deployment.
+- `delete` - (Defaults to 30 minutes) Used when deleting the Cognitive Services Account Deployment.
+- `read` - (Defaults to 5 minutes) Used when retrieving the Cognitive Services Account Deployment.
+- `update` - (Defaults to 30 minutes) Used when updating the Cognitive Services Account Deployment.
+
+Type:
+
+```hcl
+object({
+    cognitive_account_id   = string
+    name                   = string
+    rai_policy_name        = optional(string)
+    version_upgrade_option = optional(string)
+    model = object({
+      format  = string
+      name    = string
+      version = string
+    })
+    scale = object({
+      capacity = optional(number)
+      family   = optional(string)
+      size     = optional(string)
+      tier     = optional(string)
+      type     = string
+    })
+    timeouts = optional(object({
+      create = optional(string)
+      delete = optional(string)
+      read   = optional(string)
+      update = optional(string)
+    }))
+  })
+```
+
+### <a name="input_kind"></a> [kind](#input\_kind)
+
+Description: (Required) Specifies the type of Cognitive Service Account that should be created. Possible values are `Academic`, `AnomalyDetector`, `Bing.Autosuggest`, `Bing.Autosuggest.v7`, `Bing.CustomSearch`, `Bing.Search`, `Bing.Search.v7`, `Bing.Speech`, `Bing.SpellCheck`, `Bing.SpellCheck.v7`, `CognitiveServices`, `ComputerVision`, `ContentModerator`, `CustomSpeech`, `CustomVision.Prediction`, `CustomVision.Training`, `Emotion`, `Face`, `FormRecognizer`, `ImmersiveReader`, `LUIS`, `LUIS.Authoring`, `MetricsAdvisor`, `OpenAI`, `Personalizer`, `QnAMaker`, `Recommendations`, `SpeakerRecognition`, `Speech`, `SpeechServices`, `SpeechTranslation`, `TextAnalytics`, `TextTranslation` and `WebLM`. Changing this forces a new resource to be created.
+
+Type: `string`
+
 ### <a name="input_name"></a> [name](#input\_name)
 
 Description: The name of the this resource.
@@ -67,9 +119,39 @@ Description: The resource group where the resources will be deployed.
 
 Type: `string`
 
+### <a name="input_sku_name"></a> [sku\_name](#input\_sku\_name)
+
+Description: (Required) Specifies the SKU Name for this Cognitive Service Account. Possible values are `F0`, `F1`, `S0`, `S`, `S1`, `S2`, `S3`, `S4`, `S5`, `S6`, `P0`, `P1`, `P2`, `E0` and `DC0`.
+
+Type: `string`
+
 ## Optional Inputs
 
 The following input variables are optional (have default values):
+
+### <a name="input_custom_question_answering_search_service_id"></a> [custom\_question\_answering\_search\_service\_id](#input\_custom\_question\_answering\_search\_service\_id)
+
+Description: (Optional) If `kind` is `TextAnalytics` this specifies the ID of the Search service.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_custom_question_answering_search_service_key"></a> [custom\_question\_answering\_search\_service\_key](#input\_custom\_question\_answering\_search\_service\_key)
+
+Description: (Optional) If `kind` is `TextAnalytics` this specifies the key of the Search service.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_custom_subdomain_name"></a> [custom\_subdomain\_name](#input\_custom\_subdomain\_name)
+
+Description: (Optional) The subdomain name used for token-based authentication. This property is required when `network_acls` is specified. Changing this forces a new resource to be created.
+
+Type: `string`
+
+Default: `null`
 
 ### <a name="input_customer_managed_key"></a> [customer\_managed\_key](#input\_customer\_managed\_key)
 
@@ -122,6 +204,14 @@ map(object({
 
 Default: `{}`
 
+### <a name="input_dynamic_throttling_enabled"></a> [dynamic\_throttling\_enabled](#input\_dynamic\_throttling\_enabled)
+
+Description: (Optional) Whether to enable the dynamic throttling for this Cognitive Service Account.
+
+Type: `bool`
+
+Default: `null`
+
 ### <a name="input_enable_telemetry"></a> [enable\_telemetry](#input\_enable\_telemetry)
 
 Description: This variable controls whether or not telemetry is enabled for the module.  
@@ -130,7 +220,39 @@ If it is set to false, then no telemetry will be collected.
 
 Type: `bool`
 
-Default: `true`
+Default: `false`
+
+### <a name="input_fqdns"></a> [fqdns](#input\_fqdns)
+
+Description: (Optional) List of FQDNs allowed for the Cognitive Account.
+
+Type: `list(string)`
+
+Default: `null`
+
+### <a name="input_identity"></a> [identity](#input\_identity)
+
+Description: - `identity_ids` - (Optional) Specifies a list of User Assigned Managed Identity IDs to be assigned to this Cognitive Account.
+- `type` - (Required) Specifies the type of Managed Service Identity that should be configured on this Cognitive Account. Possible values are `SystemAssigned`, `UserAssigned`, `SystemAssigned, UserAssigned` (to enable both).
+
+Type:
+
+```hcl
+object({
+    identity_ids = optional(set(string))
+    type         = string
+  })
+```
+
+Default: `null`
+
+### <a name="input_local_auth_enabled"></a> [local\_auth\_enabled](#input\_local\_auth\_enabled)
+
+Description: (Optional) Whether local authentication methods is enabled for the Cognitive Account. Defaults to `true`.
+
+Type: `bool`
+
+Default: `null`
 
 ### <a name="input_location"></a> [location](#input\_location)
 
@@ -169,6 +291,71 @@ object({
 ```
 
 Default: `{}`
+
+### <a name="input_metrics_advisor_aad_client_id"></a> [metrics\_advisor\_aad\_client\_id](#input\_metrics\_advisor\_aad\_client\_id)
+
+Description: (Optional) The Azure AD Client ID (Application ID). This attribute is only set when kind is `MetricsAdvisor`. Changing this forces a new resource to be created.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_metrics_advisor_aad_tenant_id"></a> [metrics\_advisor\_aad\_tenant\_id](#input\_metrics\_advisor\_aad\_tenant\_id)
+
+Description: (Optional) The Azure AD Tenant ID. This attribute is only set when kind is `MetricsAdvisor`. Changing this forces a new resource to be created.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_metrics_advisor_super_user_name"></a> [metrics\_advisor\_super\_user\_name](#input\_metrics\_advisor\_super\_user\_name)
+
+Description: (Optional) The super user of Metrics Advisor. This attribute is only set when kind is `MetricsAdvisor`. Changing this forces a new resource to be created.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_metrics_advisor_website_name"></a> [metrics\_advisor\_website\_name](#input\_metrics\_advisor\_website\_name)
+
+Description: (Optional) The website name of Metrics Advisor. This attribute is only set when kind is `MetricsAdvisor`. Changing this forces a new resource to be created.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_network_acls"></a> [network\_acls](#input\_network\_acls)
+
+Description: - `default_action` - (Required) The Default Action to use when no rules match from `ip_rules` / `virtual_network_rules`. Possible values are `Allow` and `Deny`.
+- `ip_rules` - (Optional) One or more IP Addresses, or CIDR Blocks which should be able to access the Cognitive Account.
+
+---
+`virtual_network_rules` block supports the following:
+- `ignore_missing_vnet_service_endpoint` - (Optional) Whether ignore missing vnet service endpoint or not. Default to `false`.
+- `subnet_id` - (Required) The ID of the subnet which should be able to access this Cognitive Account.
+
+Type:
+
+```hcl
+object({
+    default_action = string
+    ip_rules       = optional(set(string))
+    virtual_network_rules = optional(set(object({
+      ignore_missing_vnet_service_endpoint = optional(bool)
+      subnet_id                            = string
+    })))
+  })
+```
+
+Default: `null`
+
+### <a name="input_outbound_network_access_restricted"></a> [outbound\_network\_access\_restricted](#input\_outbound\_network\_access\_restricted)
+
+Description: (Optional) Whether outbound network access is restricted for the Cognitive Account. Defaults to `false`.
+
+Type: `bool`
+
+Default: `null`
 
 ### <a name="input_private_endpoints"></a> [private\_endpoints](#input\_private\_endpoints)
 
@@ -226,6 +413,22 @@ map(object({
 
 Default: `{}`
 
+### <a name="input_public_network_access_enabled"></a> [public\_network\_access\_enabled](#input\_public\_network\_access\_enabled)
+
+Description: (Optional) Whether public network access is allowed for the Cognitive Account. Defaults to `true`.
+
+Type: `bool`
+
+Default: `null`
+
+### <a name="input_qna_runtime_endpoint"></a> [qna\_runtime\_endpoint](#input\_qna\_runtime\_endpoint)
+
+Description: (Optional) A URL to link a QnAMaker cognitive account to a QnA runtime.
+
+Type: `string`
+
+Default: `null`
+
 ### <a name="input_role_assignments"></a> [role\_assignments](#input\_role\_assignments)
 
 Description: A map of role assignments to create on this resource. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
@@ -255,6 +458,22 @@ map(object({
 
 Default: `{}`
 
+### <a name="input_storage"></a> [storage](#input\_storage)
+
+Description: - `identity_client_id` - (Optional) The client ID of the managed identity associated with the storage resource.
+- `storage_account_id` - (Required) Full resource id of a Microsoft.Storage resource.
+
+Type:
+
+```hcl
+list(object({
+    identity_client_id = optional(string)
+    storage_account_id = string
+  }))
+```
+
+Default: `null`
+
 ### <a name="input_tags"></a> [tags](#input\_tags)
 
 Description: The map of tags to be applied to the resource
@@ -262,6 +481,26 @@ Description: The map of tags to be applied to the resource
 Type: `map(any)`
 
 Default: `{}`
+
+### <a name="input_timeouts"></a> [timeouts](#input\_timeouts)
+
+Description: - `create` - (Defaults to 30 minutes) Used when creating the Cognitive Service Account.
+- `delete` - (Defaults to 30 minutes) Used when deleting the Cognitive Service Account.
+- `read` - (Defaults to 5 minutes) Used when retrieving the Cognitive Service Account.
+- `update` - (Defaults to 30 minutes) Used when updating the Cognitive Service Account.
+
+Type:
+
+```hcl
+object({
+    create = optional(string)
+    delete = optional(string)
+    read   = optional(string)
+    update = optional(string)
+  })
+```
+
+Default: `null`
 
 ## Outputs
 
