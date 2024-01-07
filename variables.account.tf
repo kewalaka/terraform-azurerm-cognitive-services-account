@@ -29,18 +29,6 @@ variable "custom_subdomain_name" {
   description = "(Optional) The subdomain name used for token-based authentication. This property is required when `network_acls` is specified. Changing this forces a new resource to be created."
 }
 
-variable "customer_managed_key" {
-  type = object({
-    identity_client_id = optional(string)
-    key_vault_key_id   = string
-  })
-  default     = null
-  description = <<-EOT
- - `identity_client_id` - (Optional) The Client ID of the User Assigned Identity that has access to the key. This property only needs to be specified when there're multiple identities attached to the Cognitive Account.
- - `key_vault_key_id` - (Required) The ID of the Key Vault Key which should be used to Encrypt the data in this Cognitive Account.
-EOT
-}
-
 variable "dynamic_throttling_enabled" {
   type        = bool
   default     = null
@@ -144,12 +132,6 @@ variable "storage" {
  - `identity_client_id` - (Optional) The client ID of the managed identity associated with the storage resource.
  - `storage_account_id` - (Required) Full resource id of a Microsoft.Storage resource.
 EOT
-}
-
-variable "tags" {
-  type        = map(string)
-  default     = null
-  description = "(Optional) A mapping of tags to assign to the resource."
 }
 
 variable "timeouts" {
