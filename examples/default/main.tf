@@ -55,14 +55,16 @@ module "cognitive_account" {
   sku_name            = "S0"
   kind                = "OpenAI"
   deployment = {
-    name = "cd-${module.naming.cognitive_account.name_unique}"
-    model = {
-      format  = "OpenAI"
-      name    = "text-curie-001"
-      version = "1"
-    }
-    scale = {
-      type = "Standard"
+    openai_text_deployment = {
+      name = "cd-${module.naming.cognitive_account.name_unique}"
+      model = {
+        format  = "OpenAI"
+        name    = "text-curie-001"
+        version = "1"
+      }
+      scale = {
+        type = "Standard"
+      }
     }
   }
 }

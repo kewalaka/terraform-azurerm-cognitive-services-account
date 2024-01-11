@@ -1,5 +1,5 @@
 variable "deployment" {
-  type = object({
+  type = map(object({
     name                   = string
     rai_policy_name        = optional(string)
     version_upgrade_option = optional(string)
@@ -21,7 +21,7 @@ variable "deployment" {
       read   = optional(string)
       update = optional(string)
     }))
-  })
+  }))
   description = <<-EOT
  - `name` - (Required) The name of the Cognitive Services Account Deployment. Changing this forces a new resource to be created.
  - `rai_policy_name` - (Optional) The name of RAI policy.
@@ -48,5 +48,6 @@ variable "deployment" {
  - `read` - (Defaults to 5 minutes) Used when retrieving the Cognitive Services Account Deployment.
  - `update` - (Defaults to 30 minutes) Used when updating the Cognitive Services Account Deployment.
 EOT
+  default     = {}
   nullable    = false
 }

@@ -79,13 +79,14 @@ resource "azurerm_cognitive_account" "this" {
 }
 
 resource "azurerm_cognitive_deployment" "this" {
+  for_each               = var.deployment
   cognitive_account_id   = azurerm_cognitive_account.this.id
-  name                   = var.deployment.name
-  rai_policy_name        = var.deployment.rai_policy_name
-  version_upgrade_option = var.deployment.version_upgrade_option
+  name                   = each.value.name
+  rai_policy_name        = each.value.rai_policy_name
+  version_upgrade_option = each.value.version_upgrade_option
 
   dynamic "model" {
-    for_each = [var.deployment.model]
+    for_each = [each.value.model]
     content {
       format  = model.value.format
       name    = model.value.name
@@ -93,7 +94,7 @@ resource "azurerm_cognitive_deployment" "this" {
     }
   }
   dynamic "scale" {
-    for_each = [var.deployment.scale]
+    for_each = [each.value.scale]
     content {
       type     = scale.value.type
       capacity = scale.value.capacity
@@ -103,7 +104,7 @@ resource "azurerm_cognitive_deployment" "this" {
     }
   }
   dynamic "timeouts" {
-    for_each = var.deployment.timeouts == null ? [] : [var.deployment.timeouts]
+    for_each = each.value.timeouts == null ? [] : [each.value.timeouts]
     content {
       create = timeouts.value.create
       delete = timeouts.value.delete
